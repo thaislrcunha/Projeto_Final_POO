@@ -1,4 +1,3 @@
-package poo;
 
 public class PagamentoBoleto implements IPagamento {
     
