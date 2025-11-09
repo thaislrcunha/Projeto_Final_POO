@@ -15,7 +15,7 @@ public class Produto{
         this.tipo=tipo;
     }
     //getters
-    public int idProduto(){
+    public int getIdProduto(){
         return idProduto;
     }
     public String getNome(){
