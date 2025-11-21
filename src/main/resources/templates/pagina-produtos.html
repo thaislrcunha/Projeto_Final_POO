@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja de Bolsas - Frontend Simples</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header style="position: relative;"> <h1>👜 Nossa Coleção de Bolsas</h1>
+
+    <div id="menu-usuario" style="position: absolute; top: 20px; right: 20px;">
+    </div>
+
+    <div class="carrinho-info" style="margin-top: 10px; font-size: 1.2em;">
+        <a href="/carrinho.html" style="text-decoration: none; color: inherit; cursor: pointer;">
+            🛒 Carrinho: <span id="contador-carrinho">0</span> itens
+        </a>
+    </div>
+</header>
+
+<div id="botoes-filtro" style="text-align: center; margin: 20px; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px;">
+    <button onclick="filtrarProdutos('todos')" class="btn-filtro">Ver Todos</button>
+
+    <button onclick="filtrarProdutos('Feminina')" class="btn-filtro" style="border-color: #e91e63; color: #e91e63;">Só Femininos</button>
+    <button onclick="filtrarProdutos('Masculina')" class="btn-filtro" style="border-color: #3f51b5; color: #3f51b5;">Só Masculinos</button>
+
+    <button onclick="filtrarProdutos('Mochila')" class="btn-filtro">Mochilas</button>
+    <button onclick="filtrarProdutos('Carteira')" class="btn-filtro">Carteiras</button>
+</div>
+<main id="container-produtos">
+</main>
+
+<footer>
+    <p>&copy; 2025 Loja de Bolsas. Todos os direitos reservados.</p>
+</footer>
+
+<script src="scripts.js"></script>
+</body>
+</html>

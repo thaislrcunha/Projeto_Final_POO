@@ -1,0 +1,5 @@
+id,nome,descricao,preco,estoque,tipo_produto
+1,Bolsa Tote Clássica,"Bolsa de couro legítimo",349.90,50,BolsaFeminina
+2,Mochila Executiva,"Mochila para notebook - resistente à água",599.00,30,MochilaMasculina
+3,Carteira Slim,"Carteira de couro - cor vermelha",120.00,100,CarteiraFeminina
+4,Mala de Luxo,"Mala de viagem em couro de crocodilo",6000.00,5,BolsaMasculina

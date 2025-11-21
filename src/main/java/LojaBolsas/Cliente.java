@@ -1,3 +1,5 @@
+package LojaBolsas;
+
 public class Cliente {
     private int idCliente;
     private String nome;

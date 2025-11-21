@@ -1,3 +1,4 @@
+package LojaBolsas;
 
 public class PagamentoBoleto implements IPagamento {
     

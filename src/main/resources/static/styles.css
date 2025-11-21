@@ -1,0 +1,132 @@
+/* Definições globais */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f8f8;
+    color: #333;
+}
+
+header {
+    background-color: #4CAF50; /* Verde principal */
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Layout dos produtos */
+#container-produtos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Estilo do cartão de produto */
+.cartao-produto {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden; /* Garante que a imagem não saia das bordas arredondadas */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s;
+}
+
+.cartao-produto:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.cartao-produto h2 {
+    color: #007bff; /* Azul secundário */
+    margin-top: 0;
+    font-size: 1.5em;
+}
+
+.preco {
+    font-size: 1.8em;
+    color: #d9534f; /* Vermelho para destaque de preço */
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.estoque {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 15px;
+}
+/* Estilo da Imagem */
+.img-container {
+    width: 100%;
+    height: 200px; /* Altura fixa para manter uniformidade */
+    overflow: hidden;
+}
+
+.img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Corta a imagem para preencher a área sem esticar */
+}
+
+/* Conteúdo interno (Texto) */
+.conteudo-produto {
+    padding: 15px;
+    text-align: center;
+}
+/* Botão de Ação */
+.btn-comprar {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.btn-comprar:hover {
+    background-color: #218838;
+}
+
+/* Rodapé */
+footer {
+    text-align: center;
+    padding: 15px;
+    background-color: #333;
+    color: #ddd;
+    margin-top: 30px;
+}
+/* Estilo dos botões de filtro */
+.btn-filtro {
+    background-color: #fff;
+    border: 2px solid #4CAF50;
+    color: #4CAF50;
+    padding: 8px 16px;
+    margin: 0 5px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.btn-filtro:hover, .btn-filtro:focus {
+    background-color: #4CAF50;
+    color: white;
+}
+/* Estilo para botão desativado/esgotado */
+.btn-comprar:disabled {
+    background-color: #cccccc; /* Cinza */
+    color: #666666;
+    cursor: not-allowed; /* Mostra o símbolo de "proibido" no mouse */
+    border: 1px solid #999;
+}
+
+.btn-comprar:disabled:hover {
+    background-color: #cccccc; /* Mantém cinza se passar o mouse */
+    transform: none; /* Remove o efeito de pulinho */
+}

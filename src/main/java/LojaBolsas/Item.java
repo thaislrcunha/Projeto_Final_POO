@@ -1,3 +1,5 @@
+package LojaBolsas;
+
 public class Item {
     private int idItemPedido;
     private int idPedido;

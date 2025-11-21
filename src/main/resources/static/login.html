@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Acesso ao Cliente</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* CSS Específico para esta página */
+        .container-auth { max-width: 400px; margin: 50px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; }
+        .hidden { display: none; }
+        .toggle-link { color: #4CAF50; cursor: pointer; text-decoration: underline; text-align: center; display: block; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>👜 Área do Cliente</h1>
+</header>
+
+<div class="container-auth">
+
+    <div id="box-login">
+        <h2>Entrar</h2>
+        <input type="text" id="login-user" placeholder="Usuário">
+        <input type="password" id="login-pass" placeholder="Senha">
+        <button class="btn-comprar" onclick="fazerLogin()">Entrar</button>
+        <span class="toggle-link" onclick="alternarTelas()">Não tem conta? Cadastre-se</span>
+    </div>
+
+    <div id="box-cadastro" class="hidden">
+        <h2>Novo Cadastro</h2>
+
+        <select id="cad-tipo" onchange="ajustarFormulario()">
+            <option value="PF">Pessoa Física</option>
+            <option value="PJ">Pessoa Jurídica</option>
+        </select>
+
+        <input type="text" id="cad-nome" placeholder="Nome Completo">
+        <input type="text" id="cad-user" placeholder="Crie um Usuário">
+        <input type="password" id="cad-pass" placeholder="Crie uma Senha">
+        <input type="email" id="cad-email" placeholder="Email">
+        <input type="text" id="cad-tel" placeholder="Telefone">
+
+        <h3>Endereço</h3>
+        <input type="text" id="end-logradouro" placeholder="Rua/Av">
+        <input type="text" id="end-num" placeholder="Número">
+        <input type="text" id="end-bairro" placeholder="Bairro">
+        <input type="text" id="end-cidade" placeholder="Cidade">
+        <input type="text" id="end-est" placeholder="Estado (Sigla)">
+        <input type="text" id="end-cep" placeholder="CEP">
+
+        <div id="campos-pf">
+            <input type="text" id="cad-cpf" placeholder="CPF">
+            <input type="text" id="cad-rg" placeholder="RG">
+            <label>Data Nascimento:</label>
+            <input type="date" id="cad-nasc">
+        </div>
+
+        <div id="campos-pj" class="hidden">
+            <input type="text" id="cad-cnpj" placeholder="CNPJ">
+            <input type="text" id="cad-razao" placeholder="Razão Social">
+            <input type="text" id="cad-ie" placeholder="Inscrição Estadual">
+            <label>Data Abertura:</label>
+            <input type="date" id="cad-abertura">
+        </div>
+
+        <button class="btn-comprar" onclick="fazerCadastro()">Cadastrar</button>
+        <span class="toggle-link" onclick="alternarTelas()">Já tem conta? Faça Login</span>
+    </div>
+</div>
+
+<script src="/scripts-auth.js"></script>
+</body>
+</html>

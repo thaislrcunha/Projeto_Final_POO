@@ -1,6 +1,8 @@
+package LojaBolsas;
+
 /**
  * Implementação da estratégia de pagamento para Pix.
- * Herda o contrato da interface IPagamento.
+ * Herda o contrato da interface LojaBolsas.IPagamento.
  */
 public class PagamentoPix implements IPagamento {
 

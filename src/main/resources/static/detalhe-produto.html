@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes do Produto</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* CSS Exclusivo desta página */
+        .detalhe-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .detalhe-img { flex: 1; min-width: 300px; }
+        .detalhe-img img { width: 100%; border-radius: 10px; object-fit: cover; }
+
+        .detalhe-info { flex: 1; min-width: 300px; display: flex; flex-direction: column; justify-content: center; }
+        .detalhe-info h1 { color: #333; font-size: 2.5em; margin-bottom: 10px; }
+        .detalhe-preco { font-size: 2em; color: #d9534f; font-weight: bold; margin: 20px 0; }
+        .tag-tipo { background: #eee; padding: 5px 10px; border-radius: 5px; display: inline-block; color: #666; }
+
+        .btn-voltar { display: inline-block; margin-top: 20px; text-decoration: none; color: #555; border: 1px solid #ccc; padding: 10px 20px; border-radius: 5px; }
+        .btn-voltar:hover { background: #f0f0f0; }
+    </style>
+</head>
+<body>
+
+<header style="position: relative;">
+    <h1>👜 Loja de Bolsas</h1>
+    <div id="menu-usuario" style="position: absolute; top: 20px; right: 20px;"></div>
+</header>
+
+<main>
+    <div id="loading" style="text-align: center; margin-top: 50px;">Carregando produto...</div>
+
+    <div id="produto-area" class="detalhe-container" style="display: none;">
+        <div class="detalhe-img">
+            <img id="prod-img" src="" alt="">
+        </div>
+        <div class="detalhe-info">
+            <span id="prod-tipo" class="tag-tipo">Categoria</span>
+            <h1 id="prod-nome">Nome do Produto</h1>
+            <p id="prod-desc">Descrição detalhada do produto vai aqui.</p>
+            <div class="detalhe-preco" id="prod-preco">R$ 0,00</div>
+            <p id="prod-estoque">Estoque: 0</p>
+
+            <button id="btn-comprar-detalhe" class="btn-comprar">Comprar Agora</button>
+            <a href="/loja" class="btn-voltar">⬅ Voltar para a Loja</a>
+        </div>
+    </div>
+</main>
+
+<script src="/scripts.js"></script>
+
+<script>
+    // --- SCRIPT ESPECÍFICO DA PÁGINA DE DETALHES ---
+
+    // 1. Mapa de Imagens (Precisa estar aqui também pois os dados do Java vêm sem imagem)
+    const mapaImagens = {
+        1: "/imagem/BolsaToteClassica.webp",
+        2: "/imagem/MochilaExecutiva.jpg",
+        3: "/imagem/CarteiraSlim.webp",
+        4: "/imagem/MaladeLuxo.webp"
+    };
+
+    async function carregarDetalhe() {
+        // 2. Pega o ID da URL (ex: ?id=1)
+        const params = new URLSearchParams(window.location.search);
+        const idProcurado = params.get('id');
+
+        if (!idProcurado) {
+            alert("Produto não especificado!");
+            window.location.href = "/loja";
+            return;
+        }
+
+        try {
+            // 3. Busca TODOS os produtos do Java
+            const response = await fetch('/api/produtos');
+            const produtos = await response.json();
+
+            // 4. Encontra o produto específico (Comparando ID do URL com ID do Java)
+            const produto = produtos.find(p => p.idProduto == idProcurado);
+
+            if (produto) {
+                // Define a imagem usando o mapa ou padrão
+                const imagemFinal = mapaImagens[produto.idProduto] || "/imagem/padrao.jpg";
+
+                // 5. Preenche o HTML
+                document.getElementById('prod-img').src = imagemFinal;
+                document.getElementById('prod-nome').innerText = produto.nome;
+                document.getElementById('prod-desc').innerText = produto.descricao;
+                document.getElementById('prod-preco').innerText = "R$ " + produto.preco.toFixed(2);
+                document.getElementById('prod-estoque').innerText = "Restam: " + produto.estoque + " unidades";
+
+                // Formata o Tipo
+                if(produto.tipo) {
+                    document.getElementById('prod-tipo').innerText = produto.tipo.replace(/([A-Z])/g, ' $1').trim();
+                }
+
+                // Configura o botão de comprar
+                const btn = document.getElementById('btn-comprar-detalhe');
+                if (produto.estoque > 0) {
+                    btn.onclick = () => {
+                        alert("Adicionado ao carrinho!");
+                        // Se quiser usar a lógica real do carrinho, teria que integrar mais fundo
+                    };
+                } else {
+                    btn.innerText = "Esgotado 🚫";
+                    btn.disabled = true;
+                    btn.style.backgroundColor = "#ccc";
+                }
+
+                // Mostra a div e esconde o loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('produto-area').style.display = 'flex';
+            } else {
+                document.getElementById('loading').innerText = "Produto não encontrado 😕";
+            }
+
+        } catch (error) {
+            console.error(error);
+            document.getElementById('loading').innerText = "Erro ao carregar dados.";
+        }
+    }
+
+    // Inicia ao carregar
+    document.addEventListener('DOMContentLoaded', carregarDetalhe);
+</script>
+
+</body>
+</html>

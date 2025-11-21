@@ -85,14 +85,14 @@ if ($env:MAVEN_USER_HOME) {
 }
 
 if (-not (Test-Path -Path $MAVEN_M2_PATH)) {
-    New-Item -Path $MAVEN_M2_PATH -ItemType Directory | Out-Null
+    New-LojaBolsas.Item -Path $MAVEN_M2_PATH -ItemType Directory | Out-Null
 }
 
 $MAVEN_WRAPPER_DISTS = $null
-if ((Get-Item $MAVEN_M2_PATH).Target[0] -eq $null) {
+if ((Get-LojaBolsas.Item $MAVEN_M2_PATH).Target[0] -eq $null) {
   $MAVEN_WRAPPER_DISTS = "$MAVEN_M2_PATH/wrapper/dists"
 } else {
-  $MAVEN_WRAPPER_DISTS = (Get-Item $MAVEN_M2_PATH).Target[0] + "/wrapper/dists"
+  $MAVEN_WRAPPER_DISTS = (Get-LojaBolsas.Item $MAVEN_M2_PATH).Target[0] + "/wrapper/dists"
 }
 
 $MAVEN_HOME_PARENT = "$MAVEN_WRAPPER_DISTS/$distributionUrlNameMain"
@@ -111,16 +111,16 @@ if (! $distributionUrlNameMain -or ($distributionUrlName -eq $distributionUrlNam
 
 # prepare tmp dir
 $TMP_DOWNLOAD_DIR_HOLDER = New-TemporaryFile
-$TMP_DOWNLOAD_DIR = New-Item -Itemtype Directory -Path "$TMP_DOWNLOAD_DIR_HOLDER.dir"
+$TMP_DOWNLOAD_DIR = New-LojaBolsas.Item -Itemtype Directory -Path "$TMP_DOWNLOAD_DIR_HOLDER.dir"
 $TMP_DOWNLOAD_DIR_HOLDER.Delete() | Out-Null
 trap {
   if ($TMP_DOWNLOAD_DIR.Exists) {
-    try { Remove-Item $TMP_DOWNLOAD_DIR -Recurse -Force | Out-Null }
+    try { Remove-LojaBolsas.Item $TMP_DOWNLOAD_DIR -Recurse -Force | Out-Null }
     catch { Write-Warning "Cannot remove $TMP_DOWNLOAD_DIR" }
   }
 }
 
-New-Item -Itemtype Directory -Path "$MAVEN_HOME_PARENT" -Force | Out-Null
+New-LojaBolsas.Item -Itemtype Directory -Path "$MAVEN_HOME_PARENT" -Force | Out-Null
 
 # Download and Install Apache Maven
 Write-Verbose "Couldn't find MAVEN_HOME, downloading and installing it ..."
@@ -174,15 +174,15 @@ if (!$actualDistributionDir) {
 }
 
 Write-Verbose "Found extracted Maven distribution directory: $actualDistributionDir"
-Rename-Item -Path "$TMP_DOWNLOAD_DIR/$actualDistributionDir" -NewName $MAVEN_HOME_NAME | Out-Null
+Rename-LojaBolsas.Item -Path "$TMP_DOWNLOAD_DIR/$actualDistributionDir" -NewName $MAVEN_HOME_NAME | Out-Null
 try {
-  Move-Item -Path "$TMP_DOWNLOAD_DIR/$MAVEN_HOME_NAME" -Destination $MAVEN_HOME_PARENT | Out-Null
+  Move-LojaBolsas.Item -Path "$TMP_DOWNLOAD_DIR/$MAVEN_HOME_NAME" -Destination $MAVEN_HOME_PARENT | Out-Null
 } catch {
   if (! (Test-Path -Path "$MAVEN_HOME" -PathType Container)) {
     Write-Error "fail to move MAVEN_HOME"
   }
 } finally {
-  try { Remove-Item $TMP_DOWNLOAD_DIR -Recurse -Force | Out-Null }
+  try { Remove-LojaBolsas.Item $TMP_DOWNLOAD_DIR -Recurse -Force | Out-Null }
   catch { Write-Warning "Cannot remove $TMP_DOWNLOAD_DIR" }
 }
 

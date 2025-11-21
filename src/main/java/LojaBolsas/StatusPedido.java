@@ -1,3 +1,5 @@
+package LojaBolsas;
+
 public enum StatusPedido {
     PENDENTE,
     PROCESSANDO,

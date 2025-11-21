@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Carrinho</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .carrinho-container { max-width: 900px; margin: 40px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #ddd; }
+        .item-img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; }
+        .btn-remover { background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .btn-finalizar { background: #4CAF50; color: white; padding: 12px 25px; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 10px; width: 400px; }
+        .hidden { display: none; }
+        .campo-input { width: 100%; margin-top: 5px; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+
+<header style="position: relative;">
+    <h1>🛒 Seu Carrinho</h1>
+    <div id="menu-usuario" style="position: absolute; top: 20px; right: 20px;"></div>
+</header>
+
+<main class="carrinho-container">
+    <div id="mensagem-vazio" style="text-align: center; display: none;">
+        <h2>Carrinho vazio 😢</h2>
+        <a href="/loja" style="color: blue;">Voltar para loja</a>
+    </div>
+
+    <div id="tabela-carrinho">
+        <table>
+            <thead>
+            <tr><th>Produto</th><th>Preço</th><th>Qtd</th><th>Total</th><th>Ação</th></tr>
+            </thead>
+            <tbody id="lista-itens"></tbody>
+        </table>
+        <div style="text-align: right; font-size: 1.5em; margin-top: 20px;">
+            Total: <span id="valor-total-carrinho" style="color: green;">R$ 0,00</span>
+        </div>
+        <br>
+        <button onclick="finalizarCompra()" class="btn-finalizar">Finalizar Compra ✅</button>
+    </div>
+</main>
+
+<script src="/scripts.js"></script>
+
+<script>
+    function carregarCarrinho() {
+        const tbody = document.getElementById('lista-itens');
+        const container = document.getElementById('tabela-carrinho');
+        const msgVazio = document.getElementById('mensagem-vazio');
+        const spanTotal = document.getElementById('valor-total-carrinho');
+
+        let carrinho = JSON.parse(localStorage.getItem('meuCarrinho')) || [];
+
+        // Se vazio
+        if (carrinho.length === 0) {
+            container.style.display = 'none';
+            msgVazio.style.display = 'block';
+            return;
+        }
+
+        // Se tem itens
+        msgVazio.style.display = 'none';
+        container.style.display = 'block';
+        tbody.innerHTML = '';
+        let totalGeral = 0;
+
+        carrinho.forEach((item, index) => {
+            // Proteção contra dados ruins
+            const preco = parseFloat(item.preco) || 0;
+            const qtd = parseInt(item.qtd) || 1;
+            const totalItem = preco * qtd;
+            totalGeral += totalItem;
+
+            tbody.innerHTML += `
+                <tr>
+                    <td style="display:flex; align-items:center; gap:10px;">
+                        <img src="${item.imagem}" class="item-img">
+                        ${item.nome}
+                    </td>
+                    <td>R$ ${preco.toFixed(2)}</td>
+                    <td>
+                        <button onclick="mudarQtd(${index}, -1)">-</button>
+                        ${qtd}
+                        <button onclick="mudarQtd(${index}, 1)">+</button>
+                    </td>
+                    <td>R$ ${totalItem.toFixed(2)}</td>
+                    <td><button class="btn-remover" onclick="remover(${index})">🗑️</button></td>
+                </tr>
+            `;
+        });
+
+        spanTotal.innerText = "R$ " + totalGeral.toFixed(2);
+    }
+
+    function mudarQtd(index, delta) {
+        let carrinho = JSON.parse(localStorage.getItem('meuCarrinho'));
+        carrinho[index].qtd += delta;
+        if (carrinho[index].qtd <= 0) carrinho.splice(index, 1);
+        localStorage.setItem('meuCarrinho', JSON.stringify(carrinho));
+        carregarCarrinho();
+        atualizarContadorTopo();
+    }
+
+    function remover(index) {
+        let carrinho = JSON.parse(localStorage.getItem('meuCarrinho'));
+        carrinho.splice(index, 1);
+        localStorage.setItem('meuCarrinho', JSON.stringify(carrinho));
+        carregarCarrinho();
+        atualizarContadorTopo();
+    }
+
+    // MODAL
+    function finalizarCompra() {
+        const usuario = localStorage.getItem('usuarioLogado');
+        if (!usuario) { alert("Faça Login!"); window.location.href="/login.html"; return; }
+
+        let carrinho = JSON.parse(localStorage.getItem('meuCarrinho')) || [];
+        const total = carrinho.reduce((acc, i) => acc + (i.preco * i.qtd), 0);
+
+        document.getElementById('total-modal').innerText = "R$ " + total.toFixed(2);
+        document.getElementById('modal-pagamento').style.display = 'flex';
+    }
+
+    function fecharModal() { document.getElementById('modal-pagamento').style.display = 'none'; }
+
+    function mudarMetodo() {
+        const tipo = document.querySelector('input[name="metodo"]:checked').value;
+        document.getElementById('dados-cartao').style.display = (tipo === 'CARTAO') ? 'block' : 'none';
+    }
+
+    async function pagar() {
+        const metodo = document.querySelector('input[name="metodo"]:checked').value;
+        let carrinho = JSON.parse(localStorage.getItem('meuCarrinho'));
+        const total = carrinho.reduce((acc, i) => acc + (i.preco * i.qtd), 0);
+
+        const dados = {
+            tipoMetodo: metodo,
+            valorTotal: total,
+            nomeTitular: document.getElementById('card-nome').value,
+            numeroCartao: document.getElementById('card-num').value,
+            dataValidade: document.getElementById('card-validade').value
+        };
+
+        try {
+            const res = await fetch('/api/pagamentos/processar', {
+                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(dados)
+            });
+            if (res.ok) {
+                alert("✅ " + await res.text());
+                localStorage.removeItem('meuCarrinho');
+                window.location.href = "/loja";
+            } else {
+                alert("❌ " + await res.text());
+            }
+        } catch (e) { alert("Erro de conexão"); }
+    }
+
+    document.addEventListener('DOMContentLoaded', carregarCarrinho);
+</script>
+
+<div id="modal-pagamento" class="modal-overlay">
+    <div class="modal-content">
+        <h2>Pagamento</h2>
+        <p>Total: <b id="total-modal">R$ 0,00</b></p>
+        <form onsubmit="return false;">
+            <label><input type="radio" name="metodo" value="PIX" checked onclick="mudarMetodo()"> Pix</label><br>
+            <label><input type="radio" name="metodo" value="BOLETO" onclick="mudarMetodo()"> Boleto</label><br>
+            <label><input type="radio" name="metodo" value="CARTAO" onclick="mudarMetodo()"> Cartão</label><br>
+
+            <div id="dados-cartao" class="hidden" style="margin-top:10px; background:#f0f0f0; padding:10px;">
+                <input type="text" id="card-nome" placeholder="Nome" class="campo-input">
+                <input type="text" id="card-num" placeholder="Número" class="campo-input">
+                <input type="date" id="card-validade" class="campo-input">
+            </div>
+
+            <br>
+            <button onclick="fecharModal()" style="background:#ccc; border:none; padding:10px;">Cancelar</button>
+            <button onclick="pagar()" class="btn-finalizar">Pagar</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
