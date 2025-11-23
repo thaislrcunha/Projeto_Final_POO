@@ -130,3 +130,18 @@ footer {
     background-color: #cccccc; /* Mantém cinza se passar o mouse */
     transform: none; /* Remove o efeito de pulinho */
 }
+/* Cor para produto disponível (Verde) */
+.aviso-disponivel {
+    color: #28a745; /* Um verde bonito (pode usar 'green' também) */
+    font-weight: bold;
+    margin-top: 5px;
+    font-size: 0.9rem;
+}
+
+/* Cor para produto esgotado (Vermelho) */
+.aviso-esgotado {
+    color: #dc3545; /* Um vermelho forte (pode usar 'red' também) */
+    font-weight: bold;
+    margin-top: 5px;
+    font-size: 0.9rem;
+}

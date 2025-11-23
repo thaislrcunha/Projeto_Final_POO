@@ -6,5 +6,7 @@ public enum TipoProduto{
     MochilaFeminina,
     BolsaMasculina,
     CarteiraMasculina,
-    MochilaMasculina;
+    MochilaMasculina,
+    MalaUnissexual,
+    MochilaUnissexual;
 }

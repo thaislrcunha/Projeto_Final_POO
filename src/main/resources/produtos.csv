@@ -1,5 +1,9 @@
-id,nome,descricao,preco,estoque,tipo_produto
-1,Bolsa Tote Clássica,"Bolsa de couro legítimo",349.90,50,BolsaFeminina
-2,Mochila Executiva,"Mochila para notebook - resistente à água",599.00,30,MochilaMasculina
-3,Carteira Slim,"Carteira de couro - cor vermelha",120.00,100,CarteiraFeminina
-4,Mala de Luxo,"Mala de viagem em couro de crocodilo",6000.00,5,BolsaMasculina
+id,nome,descricao,preco,estoque,tipo_produto,urlImagem,cores
+1,Bolsa Tote Clássica,"Bolsa Tote de couro legítimo e perfeita para o dia a dia.",150.00,50,BolsaFeminina,"BolsaToteClassica.webp","Rosa","Preta","Branca","Bege"
+2,Mochila Executiva,"Mochila com compartimento para notebook e impermeável.",200.00,30,MochilaMasculina,"mochilamasculina.jpg","Preta","Marrom","Azul Escuro",
+3,Carteira Slim,"Design compacto e couro premium.",80.00,20,CarteiraMasculina,"CarteiraSlim.webp","Preta","Marrom","Azul"
+4,Mala de Viagem,"Rodinhas 360º e alta resistência.",500.00,5,MalaUnissexual,"maladeviagemunissexual.jpg","Preta","Azul Escuro","Marrom","Branca"
+5,Pochete Masculina,"Design Simples.",45.00,10,BolsaMasculina,"pochetemasculina.jpg","Preta","Azul","Marrom"
+6,Mochila Feminina,"Mochila super resistente",100.00,50,MochilaFeminina,"mochilafeminina.jpg","Vermelha","Rosa","Roxo","Azul","Bege","Branca","Preta
+7,Carteira Feminina,"Carteira resistente cheia de elegância",60.00,20,CarteiraFeminina,"carteirafeminina.jpg","Vermelha","Rosa","Preta"
+8,Mochila Unissexual,"Mochila impermeável",85.00,30,MochilaUnissexual,"mochilaunissexual.jpg","Vermelha","Azul","Preta"

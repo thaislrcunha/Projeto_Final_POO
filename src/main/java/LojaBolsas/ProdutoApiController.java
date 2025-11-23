@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
-@RestController // Indica que esta classe responde com DADOS (JSON), não HTML
+@RestController
 @RequestMapping("/api")
 public class ProdutoApiController {
 
@@ -15,7 +15,8 @@ public class ProdutoApiController {
 
     @GetMapping("/produtos")
     public List<Produto> listarProdutosApi() {
-        // Pega os dados lidos do CSV e envia para quem pedir (o JavaScript)
-        return produtoService.carregarProdutosDoCsv();
+        // [CORREÇÃO] Mudamos de carregarProdutosDoCsv() para listarProdutosAtuais()
+        // Isso garante que o JavaScript receba o estoque atualizado (com as baixas das vendas)
+        return produtoService.listarProdutosAtuais();
     }
 }

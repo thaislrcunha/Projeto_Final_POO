@@ -11,6 +11,7 @@
         .item-img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; }
         .btn-remover { background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
         .btn-finalizar { background: #4CAF50; color: white; padding: 12px 25px; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; }
+        .btn-finalizar:disabled { background: #ccc; cursor: not-allowed; }
 
         /* Modal */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
@@ -35,7 +36,7 @@
     <div id="tabela-carrinho">
         <table>
             <thead>
-            <tr><th>Produto</th><th>Preço</th><th>Qtd</th><th>Total</th><th>Ação</th></tr>
+            <tr><th>Produto</th><th>Cor</th><th>Preço</th><th>Qtd</th><th>Total</th><th>Ação</th></tr>
             </thead>
             <tbody id="lista-itens"></tbody>
         </table>
@@ -43,13 +44,16 @@
             Total: <span id="valor-total-carrinho" style="color: green;">R$ 0,00</span>
         </div>
         <br>
-        <button onclick="finalizarCompra()" class="btn-finalizar">Finalizar Compra ✅</button>
+        <button id="btn-finalizar-compra" onclick="finalizarCompra()" class="btn-finalizar">Finalizar Compra ✅</button>
     </div>
 </main>
 
 <script src="/scripts.js"></script>
 
 <script>
+    // ==========================================
+    // 1. CARREGAR ITENS DO LOCALSTORAGE
+    // ==========================================
     function carregarCarrinho() {
         const tbody = document.getElementById('lista-itens');
         const container = document.getElementById('tabela-carrinho');
@@ -58,21 +62,18 @@
 
         let carrinho = JSON.parse(localStorage.getItem('meuCarrinho')) || [];
 
-        // Se vazio
         if (carrinho.length === 0) {
             container.style.display = 'none';
             msgVazio.style.display = 'block';
             return;
         }
 
-        // Se tem itens
         msgVazio.style.display = 'none';
         container.style.display = 'block';
         tbody.innerHTML = '';
         let totalGeral = 0;
 
         carrinho.forEach((item, index) => {
-            // Proteção contra dados ruins
             const preco = parseFloat(item.preco) || 0;
             const qtd = parseInt(item.qtd) || 1;
             const totalItem = preco * qtd;
@@ -84,10 +85,11 @@
                         <img src="${item.imagem}" class="item-img">
                         ${item.nome}
                     </td>
+                    <td>${item.cor || 'Padrão'}</td>
                     <td>R$ ${preco.toFixed(2)}</td>
                     <td>
                         <button onclick="mudarQtd(${index}, -1)">-</button>
-                        ${qtd}
+                        <span style="margin: 0 10px; font-weight:bold;">${qtd}</span>
                         <button onclick="mudarQtd(${index}, 1)">+</button>
                     </td>
                     <td>R$ ${totalItem.toFixed(2)}</td>
@@ -102,10 +104,15 @@
     function mudarQtd(index, delta) {
         let carrinho = JSON.parse(localStorage.getItem('meuCarrinho'));
         carrinho[index].qtd += delta;
-        if (carrinho[index].qtd <= 0) carrinho.splice(index, 1);
+
+        // Se a quantidade for zero ou menos, remove o item
+        if (carrinho[index].qtd <= 0) {
+            carrinho.splice(index, 1);
+        }
+
         localStorage.setItem('meuCarrinho', JSON.stringify(carrinho));
         carregarCarrinho();
-        atualizarContadorTopo();
+        if (typeof atualizarContadorTopo === "function") atualizarContadorTopo();
     }
 
     function remover(index) {
@@ -113,53 +120,136 @@
         carrinho.splice(index, 1);
         localStorage.setItem('meuCarrinho', JSON.stringify(carrinho));
         carregarCarrinho();
-        atualizarContadorTopo();
+        if (typeof atualizarContadorTopo === "function") atualizarContadorTopo();
     }
 
-    // MODAL
-    function finalizarCompra() {
+    // ==========================================
+    // 2. VALIDAÇÃO ANTES DE ABRIR PAGAMENTO
+    // ==========================================
+    async function finalizarCompra() {
         const usuario = localStorage.getItem('usuarioLogado');
-        if (!usuario) { alert("Faça Login!"); window.location.href="/login.html"; return; }
+        if (!usuario) {
+            alert("Faça Login para continuar!");
+            window.location.href="/login.html";
+            return;
+        }
 
-        let carrinho = JSON.parse(localStorage.getItem('meuCarrinho')) || [];
-        const total = carrinho.reduce((acc, i) => acc + (i.preco * i.qtd), 0);
+        const btn = document.querySelector('#btn-finalizar-compra');
+        const textoOriginal = btn.innerText;
+        btn.innerText = "Conferindo estoque...";
+        btn.disabled = true;
 
-        document.getElementById('total-modal').innerText = "R$ " + total.toFixed(2);
-        document.getElementById('modal-pagamento').style.display = 'flex';
+        try {
+            // Consulta o estoque REAL no servidor
+            const response = await fetch('http://localhost:8080/api/pedidos/produtos');
+            const produtosNoBanco = await response.json();
+
+            let carrinho = JSON.parse(localStorage.getItem('meuCarrinho')) || [];
+            let erros = [];
+
+            // Agrupa carrinho por ID (caso tenha o mesmo produto com cores diferentes)
+            let totalPorProduto = {};
+            carrinho.forEach(item => {
+                totalPorProduto[item.idProduto] = (totalPorProduto[item.idProduto] || 0) + item.qtd;
+            });
+
+            // Verifica cada produto
+            for (const [idProd, qtdSolicitada] of Object.entries(totalPorProduto)) {
+                // Converte ID para número para garantir comparação correta
+                const idNum = parseInt(idProd);
+                const produtoReal = produtosNoBanco.find(p => (p.id === idNum || p.idProduto === idNum));
+
+                if (!produtoReal) {
+                    erros.push(`❌ Produto ID ${idProd} não existe mais.`);
+                } else if (qtdSolicitada > produtoReal.estoque) {
+                    erros.push(`⚠️ "${produtoReal.nome}": Você pediu ${qtdSolicitada}, mas só temos ${produtoReal.estoque} unidades.`);
+                }
+            }
+
+            if (erros.length > 0) {
+                alert("IMPOSSÍVEL FINALIZAR:\n\n" + erros.join("\n") + "\n\nPor favor, diminua a quantidade no carrinho.");
+            } else {
+                // Se tudo ok, abre o modal
+                const total = carrinho.reduce((acc, i) => acc + (i.preco * i.qtd), 0);
+                document.getElementById('total-modal').innerText = "R$ " + total.toFixed(2);
+                document.getElementById('modal-pagamento').style.display = 'flex';
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert("Erro ao conectar com o servidor.");
+        } finally {
+            btn.innerText = textoOriginal;
+            btn.disabled = false;
+        }
     }
 
-    function fecharModal() { document.getElementById('modal-pagamento').style.display = 'none'; }
-
-    function mudarMetodo() {
-        const tipo = document.querySelector('input[name="metodo"]:checked').value;
-        document.getElementById('dados-cartao').style.display = (tipo === 'CARTAO') ? 'block' : 'none';
-    }
-
+    // ==========================================
+    // 3. ENVIO REAL PARA O JAVA (PAGAMENTO)
+    // ==========================================
     async function pagar() {
         const metodo = document.querySelector('input[name="metodo"]:checked').value;
-        let carrinho = JSON.parse(localStorage.getItem('meuCarrinho'));
-        const total = carrinho.reduce((acc, i) => acc + (i.preco * i.qtd), 0);
+        let carrinho = JSON.parse(localStorage.getItem('meuCarrinho')) || [];
 
-        const dados = {
-            tipoMetodo: metodo,
-            valorTotal: total,
+        // Pega ID do usuário logado (fallback para 1 se não tiver login implementado totalmente)
+        const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado'));
+        const idCliente = usuarioLogado ? usuarioLogado.id : 1;
+
+        // Converte carrinho para o formato que o Java espera (DadosPedido.java)
+        const listaItensBackend = carrinho.map(item => {
+            return {
+                idProduto: parseInt(item.idProduto),
+                quantidade: parseInt(item.qtd)
+            };
+        });
+
+        const dadosCompra = {
+            idCliente: idCliente,
+            metodoPagamento: metodo,
+            itens: listaItensBackend,
             nomeTitular: document.getElementById('card-nome').value,
             numeroCartao: document.getElementById('card-num').value,
             dataValidade: document.getElementById('card-validade').value
         };
 
+        const btnPagar = document.querySelector('#modal-pagamento button.btn-finalizar');
+        const textoOriginal = btnPagar.innerText;
+        btnPagar.innerText = "Processando...";
+        btnPagar.disabled = true;
+
         try {
-            const res = await fetch('/api/pagamentos/processar', {
-                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(dados)
+            // Envia para o PedidoController.java
+            const response = await fetch('/api/pedidos/novo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dadosCompra)
             });
-            if (res.ok) {
-                alert("✅ " + await res.text());
+
+            const respostaTexto = await response.text();
+
+            if (response.ok) {
+                alert(respostaTexto); // Mensagem de sucesso do Java
                 localStorage.removeItem('meuCarrinho');
                 window.location.href = "/loja";
             } else {
-                alert("❌ " + await res.text());
+                // Mensagem de erro do Java (ex: Estoque insuficiente)
+                alert("⛔ FALHA NA COMPRA:\n" + respostaTexto);
             }
-        } catch (e) { alert("Erro de conexão"); }
+
+        } catch (error) {
+            console.error("Erro:", error);
+            alert("Erro de conexão com o servidor.");
+        } finally {
+            btnPagar.innerText = textoOriginal;
+            btnPagar.disabled = false;
+        }
+    }
+
+    // Funções do Modal
+    function fecharModal() { document.getElementById('modal-pagamento').style.display = 'none'; }
+    function mudarMetodo() {
+        const tipo = document.querySelector('input[name="metodo"]:checked').value;
+        document.getElementById('dados-cartao').style.display = (tipo === 'CARTAO') ? 'block' : 'none';
     }
 
     document.addEventListener('DOMContentLoaded', carregarCarrinho);
