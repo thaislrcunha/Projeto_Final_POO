@@ -2,74 +2,252 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Acesso ao Cliente</title>
-    <link rel="stylesheet" href="/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso - Loja de Bolsas</title>
+    <link rel="stylesheet" href="login.css">
+
     <style>
-        /* CSS Específico para esta página */
-        .container-auth { max-width: 400px; margin: 50px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; }
-        .hidden { display: none; }
-        .toggle-link { color: #4CAF50; cursor: pointer; text-decoration: underline; text-align: center; display: block; margin-top: 10px; }
+        /* --- ESTILOS COMPLEMENTARES (Para manter a estética) --- */
+
+        /* Sistema de Abas Minimalista (Parece título) */
+        .tabs-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee; /* Linha sutil separando */
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            font-family: inherit; /* Usa a mesma fonte do site */
+            font-size: 1.5rem;    /* Tamanho parecido com o H2 original */
+            font-weight: bold;
+            color: #ccc;          /* Cinza claro para o inativo */
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: #333;          /* Cor escura (ou rosa) para o ativo */
+            border-bottom: 2px solid #333; /* Indicador ativo */
+        }
+
+        .tab-btn:hover {
+            color: #666;
+        }
+
+        /* Ocultar formulários inativos */
+        .auth-form {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        .auth-form.active {
+            display: block;
+        }
+
+        /* Animação suave na troca */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Estilo da mensagem de erro (Vermelho sutil) */
+        .msg-erro-campo {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+            min-height: 18px; /* Evita que o layout pule */
+        }
+
+        /* Borda vermelha no input com erro */
+        .input-erro {
+            border-color: #e74c3c !important;
+            background-color: #fdf2f2;
+        }
+
+        /* Ajuste para campos PF/PJ */
+        .campos-especificos { display: none; }
+        .campos-especificos.visivel { display: block; }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>👜 Área do Cliente</h1>
-</header>
+<div class="login-container">
 
-<div class="container-auth">
-
-    <div id="box-login">
-        <h2>Entrar</h2>
-        <input type="text" id="login-user" placeholder="Usuário">
-        <input type="password" id="login-pass" placeholder="Senha">
-        <button class="btn-comprar" onclick="fazerLogin()">Entrar</button>
-        <span class="toggle-link" onclick="alternarTelas()">Não tem conta? Cadastre-se</span>
+    <div class="tabs-header">
+        <button id="tab-login" class="tab-btn active">Login</button>
+        <button id="tab-cadastro" class="tab-btn">Cadastro</button>
     </div>
 
-    <div id="box-cadastro" class="hidden">
-        <h2>Novo Cadastro</h2>
-
-        <select id="cad-tipo" onchange="ajustarFormulario()">
-            <option value="PF">Pessoa Física</option>
-            <option value="PJ">Pessoa Jurídica</option>
-        </select>
-
-        <input type="text" id="cad-nome" placeholder="Nome Completo">
-        <input type="text" id="cad-user" placeholder="Crie um Usuário">
-        <input type="password" id="cad-pass" placeholder="Crie uma Senha">
-        <input type="email" id="cad-email" placeholder="Email">
-        <input type="text" id="cad-tel" placeholder="Telefone">
-
-        <h3>Endereço</h3>
-        <input type="text" id="end-logradouro" placeholder="Rua/Av">
-        <input type="text" id="end-num" placeholder="Número">
-        <input type="text" id="end-bairro" placeholder="Bairro">
-        <input type="text" id="end-cidade" placeholder="Cidade">
-        <input type="text" id="end-est" placeholder="Estado (Sigla)">
-        <input type="text" id="end-cep" placeholder="CEP">
-
-        <div id="campos-pf">
-            <input type="text" id="cad-cpf" placeholder="CPF">
-            <input type="text" id="cad-rg" placeholder="RG">
-            <label>Data Nascimento:</label>
-            <input type="date" id="cad-nasc">
+    <form id="formLoginReal" class="auth-form active">
+        <div class="input-group">
+            <label for="username">Usuário</label>
+            <input type="text" id="username" name="username" required>
         </div>
 
-        <div id="campos-pj" class="hidden">
-            <input type="text" id="cad-cnpj" placeholder="CNPJ">
-            <input type="text" id="cad-razao" placeholder="Razão Social">
-            <input type="text" id="cad-ie" placeholder="Inscrição Estadual">
-            <label>Data Abertura:</label>
-            <input type="date" id="cad-abertura">
+        <div class="input-group">
+            <label for="password">Senha</label>
+
+            <input type="password" id="password" name="password" required>
         </div>
 
-        <button class="btn-comprar" onclick="fazerCadastro()">Cadastrar</button>
-        <span class="toggle-link" onclick="alternarTelas()">Já tem conta? Faça Login</span>
-    </div>
+        <button type="submit" class="btn-login">Entrar</button>
+
+        <div class="options">
+            <a href="#" id="forgot-password-link">Esqueceu a senha?</a>
+        </div>
+    </form>
+
+
+    <form id="cadastro-form" class="auth-form">
+
+        <div class="input-group">
+            <label for="tipo-pessoa">Eu sou:</label>
+            <select id="tipo-pessoa" name="tipo" style="width: 100%; padding: 10px; margin-top: 5px;">
+                <option value="PF">Pessoa Física</option>
+                <option value="PJ">Pessoa Jurídica</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Nome Completo</label>
+            <input type="text" id="cadNome" name="nome" required>
+            <span id="error-cadNome" class="msg-erro-campo"></span>
+        </div>
+
+        <div class="input-group">
+            <label>E-mail</label>
+            <input type="email" id="cadEmail" name="email" required>
+            <span id="error-cadEmail" class="msg-erro-campo"></span>
+        </div>
+
+        <div class="input-group">
+            <label>Telefone</label>
+            <input type="text" id="cadTelefone" name="telefone" required>
+            <span id="error-cadTelefone" class="msg-erro-campo"></span>
+        </div>
+
+        <div class="campos-especificos campos-pf visivel">
+            <div class="input-group">
+                <label>CPF</label>
+                <input type="text" id="cadCpf" name="cpf" placeholder="Apenas números">
+                <span id="error-cadCpf" class="msg-erro-campo"></span>
+            </div>
+            <div class="input-group">
+                <label>RG</label>
+                <input type="text" id="cadRg" name="rg">
+                <span id="error-cadRg" class="msg-erro-campo"></span>
+            </div>
+            <div class="input-group">
+                <label>Data de Nascimento</label>
+                <input type="date" id="cadNascimento" name="dataNascimento">
+                <span id="error-cadNascimento" class="msg-erro-campo"></span>
+            </div>
+        </div>
+
+        <div class="campos-especificos campos-pj">
+            <div class="input-group">
+                <label>CNPJ</label>
+                <input type="text" id="cadCnpj" name="cnpj" placeholder="Apenas números">
+                <span id="error-cadCnpj" class="msg-erro-campo"></span>
+            </div>
+            <div class="input-group">
+                <label>Razão Social</label>
+                <input type="text" id="cadRazao" name="razaoSocial">
+                <span id="error-cadRazao" class="msg-erro-campo"></span>
+            </div>
+            <div class="input-group">
+                <label>Inscrição Estadual</label>
+                <input type="text" id="cadIE" name="inscricaoEstadual">
+                <span id="error-cadIE" class="msg-erro-campo"></span>
+            </div>
+            <div class="input-group">
+                <label>Data de Abertura</label>
+                <input type="date" id="cadAbertura" name="dataAbertura">
+                <span id="error-cadAbertura" class="msg-erro-campo"></span>
+            </div>
+        </div>
+
+        <h3 style="margin: 20px 0 10px; color: #666; font-size: 1rem; border-bottom: 1px solid #eee;">Endereço</h3>
+
+        <div class="input-group">
+            <label>CEP</label>
+            <input type="text" id="endCep" name="cep" maxlength="8">
+            <span id="error-endCep" class="msg-erro-campo"></span>
+        </div>
+
+        <div class="input-group">
+            <label>Rua / Logradouro</label>
+            <input type="text" id="endRua" name="logradouro">
+            <span id="error-endRua" class="msg-erro-campo"></span>
+        </div>
+
+        <div class="input-group">
+            <label>Número</label>
+            <input type="text" id="endNum" name="numero">
+            <span id="error-endNum" class="msg-erro-campo"></span>
+        </div>
+
+        <div class="input-group">
+            <label>Bairro</label>
+            <input type="text" id="endBairro" name="bairro">
+            <span id="error-endBairro" class="msg-erro-campo"></span>
+        </div>
+
+        <div class="input-group">
+            <label>Cidade</label>
+            <input type="text" id="endCidade" name="cidade">
+            <span id="error-endCidade" class="msg-erro-campo"></span>
+        </div>
+
+        <div class="input-group">
+            <label>Estado (Sigla)</label>
+            <input type="text" id="endEstado" name="estado" maxlength="2" style="text-transform: uppercase;">
+            <span id="error-endEstado" class="msg-erro-campo"></span>
+        </div>
+        <div class="input-group">
+            <label>Complemento</label>
+            <input type="text" id="endComp" name="complemento">
+        </div>
+
+        <h3 style="margin: 20px 0 10px; color: #666; font-size: 1rem; border-bottom: 1px solid #eee;">Dados de Acesso</h3>
+
+        <div class="input-group">
+            <label>Criar Usuário</label>
+            <input type="text" id="cadUser" name="username">
+            <span id="error-cadUser" class="msg-erro-campo"></span>
+        </div>
+
+        <div class="input-group">
+            <label>Criar Senha</label>
+            <input type="password" id="cadPass" name="password">
+            <span id="error-cadPass" class="msg-erro-campo"></span>
+        </div>
+
+        <button type="submit" class="btn-login" style="margin-top: 20px;">Cadastrar</button>
+        <div id="mensagem-erro-servidor" class="msg-erro-campo" style="text-align: center; margin-top: 10px;"></div>
+    </form>
+
+    <form id="forgot-password-form" class="auth-form">
+        <h3>Recuperar Senha</h3>
+        <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">Digite seu e-mail para receber as instruções.</p>
+        <div class="input-group">
+            <label for="forgot-email">E-mail</label>
+            <input type="email" id="forgot-email">
+        </div>
+        <button type="submit" class="btn-login">Enviar</button>
+        <div class="options">
+            <a href="#" id="back-to-login">Voltar para Login</a>
+        </div>
+    </form>
+
 </div>
 
-<script src="/scripts-auth.js"></script>
+<script src="scripts-auth.js"></script>
 </body>
 </html>
