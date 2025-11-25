@@ -1,4 +1,4 @@
-package LojaBolsas; // Ajuste para seu pacote
+package LojaBolsas;
 
 import java.util.List;
 
@@ -7,10 +7,10 @@ public class DadosPedido {
     public int idCliente;
     public String metodoPagamento; // "PIX", "BOLETO", "CARTAO"
 
-    // Dados específicos para Cartão (opcionais se for Pix)
+    // Dados específicos para Cartão
     public String numeroCartao;
     public String nomeTitular;
-    public String dataValidade; // O site envia como String "2025-12-31"
+    public String dataValidade;
 
     // Lista simplificada de itens
     public List<ItemDTO> itens;

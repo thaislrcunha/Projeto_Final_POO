@@ -16,7 +16,7 @@ function ajustarFormulario() {
     }
 }
 
-// --- FUNÇÃO DE CADASTRO ---
+//FUNÇÃO DE CADASTRO
 async function fazerCadastro() {
     const tipo = document.getElementById('cad-tipo').value;
 
@@ -66,7 +66,7 @@ async function fazerCadastro() {
     }
 }
 
-// --- FUNÇÃO DE LOGIN ---
+//FUNÇÃO DE LOGIN
 async function fazerLogin() {
     const user = document.getElementById('login-user').value;
     const pass = document.getElementById('login-pass').value;

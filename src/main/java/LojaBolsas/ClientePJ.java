@@ -1,7 +1,6 @@
 package LojaBolsas;
 
 import java.time.LocalDate;
-
 public class ClientePJ extends Cliente {
     private String cnpj;
     private String razaoSocial;
@@ -19,10 +18,6 @@ public class ClientePJ extends Cliente {
         this.inscricaoEstadual = inscricaoEstadual;
         this.dataAbertura = dataAbertura;
     }
-
-    //validar cnpj -> verificar
-
-
     // getters/setters
     public String getCNPJ(){
     return this.cnpj;

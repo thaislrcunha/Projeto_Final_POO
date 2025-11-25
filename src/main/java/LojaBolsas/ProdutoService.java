@@ -27,7 +27,7 @@ public class ProdutoService {
 
     public Produto buscarPorId(int id) {
         return estoqueGlobal.stream()
-                .filter(p -> p.getIdProduto() == id) // ou p.getId() dependendo da sua classe Produto
+                .filter(p -> p.getIdProduto() == id)
                 .findFirst()
                 .orElse(null);
     }
@@ -54,14 +54,10 @@ public class ProdutoService {
 
             String linha;
             while ((linha = br.readLine()) != null) {
-                // Regex mágica: Separa por vírgula, MAS ignora vírgulas dentro de aspas
-                // Ex: "Descricao, com virgula" não será quebrado.
                 String[] dados = linha.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
 
-                // O seu CSV tem no mínimo 7 colunas fixas + colunas variáveis de cores
                 if (dados.length >= 7) {
                     try {
-                        // 1. Colunas Fixas (0 a 6)
                         int id = Integer.parseInt(limparTexto(dados[0]));
                         String nome = limparTexto(dados[1]);
                         String descricao = limparTexto(dados[2]);
@@ -70,7 +66,6 @@ public class ProdutoService {
                         TipoProduto tipo = TipoProduto.valueOf(limparTexto(dados[5]));
                         String urlImagem = limparTexto(dados[6]);
 
-                        // 2. Colunas Variáveis (7 em diante são Cores)
                         List<String> cores = new ArrayList<>();
                         for (int i = 7; i < dados.length; i++) {
                             String corLimpa = limparTexto(dados[i]);
@@ -93,8 +88,7 @@ public class ProdutoService {
         return produtos;
     }
 
-    // Método auxiliar para remover aspas e espaços extras
-    // Ex: transforma '"Rosa"' em 'Rosa'
+    //Metodo auxiliar para remover aspas e espaços extras
     private String limparTexto(String texto) {
         if (texto == null) return "";
         texto = texto.trim();

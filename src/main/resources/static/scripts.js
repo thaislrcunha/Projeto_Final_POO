@@ -1,6 +1,4 @@
-// ==========================================
 // 1. CONFIGURAÇÕES E VARIÁVEIS GLOBAIS
-// ==========================================
 const imagensMap = {
     1: "/imagem/BolsaToteClassica.webp",
     2: "/imagem/MochilaExecutiva.jpg",
@@ -14,9 +12,8 @@ const imagensMap = {
 
 let todosProdutos = [];
 
-// ==========================================
+
 // 2. CARREGAMENTO DE DADOS (API)
-// ==========================================
 function carregarDados() {
     console.log("Iniciando busca de produtos...");
 
@@ -60,9 +57,7 @@ function carregarDados() {
         });
 }
 
-// ==========================================
 // 3. RENDERIZAÇÃO DA VITRINE (Home)
-// ==========================================
 function renderizarProdutos(lista) {
     const container = document.getElementById('container-produtos');
     if (!container) return;
@@ -101,9 +96,7 @@ function renderizarProdutos(lista) {
     });
 }
 
-// ==========================================
 // 4. PÁGINA DE DETALHES DO PRODUTO
-// ==========================================
 function carregarPaginaDetalhes() {
     const params = new URLSearchParams(window.location.search);
     const idUrl = params.get('id');
@@ -182,9 +175,7 @@ function atualizarEstoqueDetalhe(produto) {
     }
 }
 
-// ==========================================
 // 5. CARRINHO (Adicionar e Contar)
-// ==========================================
 function adicionarAoCarrinho(idClicado) {
     const produto = todosProdutos.find(p => p.idProduto == idClicado);
 
@@ -243,9 +234,7 @@ function atualizarContadorTopo() {
     }
 }
 
-// ==========================================
 // 6. FILTROS E UTILITÁRIOS
-// ==========================================
 function filtrarProdutos(categoriaAlvo) {
     if (categoriaAlvo === 'Todos') {
         renderizarProdutos(todosProdutos);
@@ -260,9 +249,7 @@ function filtrarProdutos(categoriaAlvo) {
     renderizarProdutos(listaFiltrada);
 }
 
-// ==========================================
 // 7. LOGIN E USUÁRIO
-// ==========================================
 function verificarUsuarioLogado() {
     const menu = document.getElementById('menu-usuario');
     if (!menu) return;
@@ -283,18 +270,14 @@ function logout() {
     window.location.reload();
 }
 
-// ==========================================
 // 8. INICIALIZAÇÃO
-// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     atualizarContadorTopo();
     verificarUsuarioLogado();
     carregarDados();
 });
 
-// ==========================================
 // 9. VALIDAÇÃO DE ESTOQUE (NOVO)
-// ==========================================
 async function verificarDisponibilidadeEstoque() {
     let carrinho = JSON.parse(localStorage.getItem('meuCarrinho')) || [];
     if (carrinho.length === 0) return { ok: false, erro: "Carrinho vazio" };

@@ -16,14 +16,11 @@ public class LojaController {
     @GetMapping("/loja")
     public String listarProdutos(Model model) {
 
-        // [CORREÇÃO] Use o método que busca da memória, e não o que lê do CSV
-        // Antes: produtoService.carregarProdutosDoCsv();
-        // Agora:
         List<Produto> listaProdutos = produtoService.listarProdutosAtuais();
 
         // Verifica se a lista não está vazia e loga
         if (listaProdutos.isEmpty()) {
-            System.out.println("Lista de produtos vazia (memória).");
+            System.out.println("Lista de produtos vazia.");
         } else {
             System.out.println("Produtos recuperados da memória. Total: " + listaProdutos.size());
         }
@@ -33,3 +30,4 @@ public class LojaController {
         return "pagina-produtos";
     }
 }
+// Aqui o String corresponde ao nome do arquivo HTML

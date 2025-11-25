@@ -15,8 +15,6 @@ public class ProdutoApiController {
 
     @GetMapping("/produtos")
     public List<Produto> listarProdutosApi() {
-        // [CORREÇÃO] Mudamos de carregarProdutosDoCsv() para listarProdutosAtuais()
-        // Isso garante que o JavaScript receba o estoque atualizado (com as baixas das vendas)
         return produtoService.listarProdutosAtuais();
     }
 }

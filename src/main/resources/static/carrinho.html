@@ -51,9 +51,7 @@
 <script src="/scripts.js"></script>
 
 <script>
-    // ==========================================
     // 1. CARREGAR ITENS DO LOCALSTORAGE
-    // ==========================================
     function carregarCarrinho() {
         const tbody = document.getElementById('lista-itens');
         const container = document.getElementById('tabela-carrinho');
@@ -123,9 +121,7 @@
         if (typeof atualizarContadorTopo === "function") atualizarContadorTopo();
     }
 
-    // ==========================================
     // 2. VALIDAÇÃO ANTES DE ABRIR PAGAMENTO
-    // ==========================================
     async function finalizarCompra() {
         const usuario = localStorage.getItem('usuarioLogado');
         if (!usuario) {
@@ -184,9 +180,7 @@
         }
     }
 
-    // ==========================================
     // 3. ENVIO REAL PARA O JAVA (PAGAMENTO)
-    // ==========================================
     async function pagar() {
         const metodo = document.querySelector('input[name="metodo"]:checked').value;
         let carrinho = JSON.parse(localStorage.getItem('meuCarrinho')) || [];

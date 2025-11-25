@@ -44,7 +44,7 @@ public class PagamentoController {
         if (aprovado) {
             return ResponseEntity.ok("Pagamento APROVADO via " + dto.tipoMetodo);
         } else {
-            // Exemplo: Cartão recusado se valor > 5000 (sua regra de negócio)
+            // Exemplo: Cartão recusado se valor > 5000
             return ResponseEntity.status(402).body("Pagamento RECUSADO. Verifique o limite ou dados.");
         }
     }
